@@ -3,9 +3,7 @@ package com.aedbia.keybindsgalore;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.InputConstants;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -14,7 +12,7 @@ import net.minecraftforge.client.settings.KeyModifier;
 
 public class KeybindsManager {
 
-
+    public static List<KeyMapping> key = new ArrayList<>();
     @SuppressWarnings("FieldMayBeFinal")
     private static Map<InputConstants.Key, List<KeyMapping>> conflictingKeys = Maps.newHashMap();
 
@@ -61,9 +59,8 @@ public class KeybindsManager {
             }
 
             return !keyInArray;
-
-
     }
+
 
     public static void openConflictMenu(InputConstants.Key key) {
         KeybindsScreen screen = new KeybindsScreen(key);

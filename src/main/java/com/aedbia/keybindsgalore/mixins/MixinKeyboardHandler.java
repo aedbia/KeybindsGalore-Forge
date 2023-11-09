@@ -12,11 +12,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = KeyboardHandler.class, priority = -5000)
-public class MixinKeyboardHandler {
+public abstract class MixinKeyboardHandler {
 
     @Inject(
             method = {"keyPress"},
-            at = {@At("HEAD")},
+            at = {@At(value = "INVOKE",target = "Lnet/minecraftforge/client/ForgeHooksClient;onKeyInput(IIII)V")},
             cancellable = true
     )
     private void keyPress(long p_90894_, int p_90895_, int p_90896_, int p_90897_, int p_90898_, CallbackInfo ci) {

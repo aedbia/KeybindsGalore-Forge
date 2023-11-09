@@ -140,8 +140,13 @@ public class KeybindsScreen extends Screen{
         ChooseOpen = false;
     	if (slotSelected != -1) {
             KeyMapping bind = KeybindsManager.getConflicting(conflictedKey).get(slotSelected);
-            bind.setDown(true);
-            ((AccessorKeyMapping)bind).setClickCount(1);
+            if(!bind.isDown()){
+                bind.setDown(true);
+            }
+            if(!bind.consumeClick()){
+                ((AccessorKeyMapping)bind).setClickCount(((AccessorKeyMapping)bind).getClickCount() + 1);
+            }
+            KeybindsManager.key.add(bind);
         }
     }
 
