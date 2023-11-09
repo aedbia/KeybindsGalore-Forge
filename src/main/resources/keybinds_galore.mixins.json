@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "aedbia.keybindsgalore.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "keybinds_galore.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "KeybindsGaloreMixins$AccessorKeyMapping",
+    "KeybindsGaloreMixins$MixinKeyboardHandler"
+  ],
+  "minVersion": "0.8"
+}
