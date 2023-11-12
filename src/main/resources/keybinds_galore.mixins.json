@@ -6,8 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "MixinKeyboardHandler",
-    "AccessorKeyMapping"
+    "KeybindsGaloreMixins$AccessorKeyMapping",
+    "KeybindsGaloreMixins$MixinKeyboardHandler"
   ],
   "minVersion": "0.8"
 }

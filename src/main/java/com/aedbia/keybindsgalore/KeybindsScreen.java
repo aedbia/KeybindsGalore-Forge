@@ -1,6 +1,5 @@
 package com.aedbia.keybindsgalore;
 
-import com.aedbia.keybindsgalore.mixins.AccessorKeyMapping;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.GameRenderer;
@@ -43,7 +42,7 @@ public class KeybindsScreen extends Screen{
         int y = height / 2;
         int maxRadius = 88;
         double angle = mouseAngle(x, y, mouseX, mouseY);
-        int segments = KeybindsManager.getConflicting(conflictedKey).size();
+        int segments = KeyMappingManager.getConflicting(conflictedKey).size();
         float step = (float) Math.PI / 180;
         float degPer = (float) Math.PI * 2 / segments;
 
@@ -103,7 +102,7 @@ public class KeybindsScreen extends Screen{
             float rad = (seg + 0.5f) * degPer;
             float xp = x + Mth.cos(rad) * radius;
             float yp = y + Mth.sin(rad) * radius;
-            String boundKey = Component.translatable(KeybindsManager.getConflicting(conflictedKey).get(seg).getName()).getString();
+            String boundKey = Component.translatable(KeyMappingManager.getConflicting(conflictedKey).get(seg).getName()).getString();
             float xsp = xp - 4;
             float ysp = yp;
             String name = mouseInSector ? ("="+boundKey+"="): boundKey;
@@ -139,14 +138,9 @@ public class KeybindsScreen extends Screen{
     	super.onClose();
         ChooseOpen = false;
     	if (slotSelected != -1) {
-            KeyMapping bind = KeybindsManager.getConflicting(conflictedKey).get(slotSelected);
-            if(!bind.isDown()){
-                bind.setDown(true);
-            }
-            if(!bind.consumeClick()){
-                ((AccessorKeyMapping)bind).setClickCount(((AccessorKeyMapping)bind).getClickCount() + 1);
-            }
-            KeybindsManager.key.add(bind);
+            KeyMapping keyMapping = KeyMappingManager.getConflicting(conflictedKey).get(slotSelected);
+            KeyMappingManager.clickKeys(keyMapping);
+            KeyMappingManager.selectKeys.add(keyMapping);
         }
     }
 

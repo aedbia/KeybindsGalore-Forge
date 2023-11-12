@@ -1,5 +1,6 @@
 package com.aedbia.keybindsgalore;
 
+import com.aedbia.keybindsgalore.mixins.KeybindsGaloreMixins.AccessorKeyMapping;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -10,9 +11,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 
-public class KeybindsManager {
+public class KeyMappingManager {
 
-    public static List<KeyMapping> key = new ArrayList<>();
+    public static List<KeyMapping> selectKeys = new ArrayList<>();
     @SuppressWarnings("FieldMayBeFinal")
     private static Map<InputConstants.Key, List<KeyMapping>> conflictingKeys = Maps.newHashMap();
 
@@ -42,18 +43,18 @@ public class KeybindsManager {
             }
         }
         if(matches.size() <2){
-            KeybindsManager.conflictingKeys.remove(key);
+            KeyMappingManager.conflictingKeys.remove(key);
             return false;
         }
 
-            KeybindsManager.conflictingKeys.put(key, matches);
+            KeyMappingManager.conflictingKeys.put(key, matches);
 
             // Check if the key is in the array
             boolean keyInArray = false;
             for (InputConstants.Key arrayKey : keysToCheck) {
                 if (arrayKey.equals(key)) {
                     keyInArray = true;
-                    KeybindsManager.conflictingKeys.remove(key);
+                    KeyMappingManager.conflictingKeys.remove(key);
                     break;
                 }
             }
@@ -61,7 +62,12 @@ public class KeybindsManager {
             return !keyInArray;
     }
 
+    public static void clickKeys(KeyMapping key){
 
+        key.setDown(true);
+        ((AccessorKeyMapping)key).setClickCount(((AccessorKeyMapping)key).getClickCount() + 1);
+
+    }
     public static void openConflictMenu(InputConstants.Key key) {
         KeybindsScreen screen = new KeybindsScreen(key);
         Minecraft.getInstance().setScreen(screen);
