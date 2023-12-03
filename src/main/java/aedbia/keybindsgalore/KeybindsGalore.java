@@ -1,14 +1,14 @@
-package com.aedbia.keybindsgalore;
+package aedbia.keybindsgalore;
 
-import com.aedbia.keybindsgalore.mixins.KeybindsGaloreMixins.AccessorKeyMapping;
-import com.mojang.blaze3d.platform.InputConstants;
+import aedbia.keybindsgalore.mixins.KeybindsGaloreMixins;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -22,13 +22,17 @@ public class KeybindsGalore
 
     public KeybindsGalore()
     {
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
     }
 
     @SubscribeEvent
+    public void registerBindings(RegisterKeyMappingsEvent event) {
+        event.register(KeyMappingManager.OPEN_CONFLICT_MENU);
+    }
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (!KeyMappingManager.selectKeys.isEmpty()) {
-            boolean a = InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(),InputConstants.getKey("key.keyboard.left.alt").getValue());
+            boolean a = KeyMappingManager.OPEN_CONFLICT_MENU.isDown();
             List<KeyMapping> list = new ArrayList<>();
             for(int x =0;x< KeyMappingManager.selectKeys.size();x++){
                 boolean b = x == KeyMappingManager.selectKeys.size() -1;
@@ -38,7 +42,7 @@ public class KeybindsGalore
                     KeyMappingManager.clickKeys(key);
                 }else{
                     if(c){
-                        ((AccessorKeyMapping)key).invokeRelease();
+                        ((KeybindsGaloreMixins.AccessorKeyMapping)key).invokeRelease();
                     }
                     list.add(key);
                 }

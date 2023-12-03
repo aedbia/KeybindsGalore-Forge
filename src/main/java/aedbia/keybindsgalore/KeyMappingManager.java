@@ -1,6 +1,6 @@
-package com.aedbia.keybindsgalore;
+package aedbia.keybindsgalore;
 
-import com.aedbia.keybindsgalore.mixins.KeybindsGaloreMixins.AccessorKeyMapping;
+import aedbia.keybindsgalore.mixins.KeybindsGaloreMixins.AccessorKeyMapping;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -10,6 +10,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
+import org.lwjgl.glfw.GLFW;
 
 public class KeyMappingManager {
 
@@ -29,8 +30,11 @@ public class KeyMappingManager {
             InputConstants.getKey("key.keyboard.w"),
             InputConstants.getKey("key.keyboard.a"),
             InputConstants.getKey("key.keyboard.s"),
-            InputConstants.getKey("key.keyboard.d")
-    };
+            InputConstants.getKey("key.keyboard.d")};
+
+    public static KeyMapping OPEN_CONFLICT_MENU = new KeyMapping(KeybindsGalore.MODID+".open_conflict_menu",InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_ALT,"key.categories.KeyBindGalore");
+    public KeyMappingManager() {
+    }
 
     public static boolean handleConflict(InputConstants.Key key) {
         List<KeyMapping> matches = new ArrayList<>();

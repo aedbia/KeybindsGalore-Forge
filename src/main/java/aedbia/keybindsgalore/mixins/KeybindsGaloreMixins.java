@@ -1,7 +1,7 @@
-package com.aedbia.keybindsgalore.mixins;
+package aedbia.keybindsgalore.mixins;
 
-import com.aedbia.keybindsgalore.KeyMappingManager;
-import com.aedbia.keybindsgalore.KeybindsScreen;
+import aedbia.keybindsgalore.KeyMappingManager;
+import aedbia.keybindsgalore.KeybindsScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
