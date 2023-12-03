@@ -1,26 +1,22 @@
 package aedbia.keybindsgalore;
 
-import aedbia.keybindsgalore.mixins.KeybindsGaloreMixins.AccessorKeyMapping;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.InputConstants;
-
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.client.settings.KeyModifier;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyMappingManager {
-
-    public static List<KeyMapping> selectKeys = new ArrayList<>();
     @SuppressWarnings("FieldMayBeFinal")
     private static Map<InputConstants.Key, List<KeyMapping>> conflictingKeys = Maps.newHashMap();
-
-
+    public static Map<InputConstants.Key, KeyMapping> boundKeyMapping = Maps.newHashMap();
     @SuppressWarnings("NoTranslation")
-    public static InputConstants.Key[] keysToCheck = {
+    public static InputConstants.Key[] keysToCheck = new InputConstants.Key[]{
             InputConstants.getKey("key.keyboard.tab"),
             InputConstants.getKey("key.keyboard.caps.lock"),
             InputConstants.getKey("key.keyboard.left.shift"),
@@ -38,46 +34,40 @@ public class KeyMappingManager {
 
     public static boolean handleConflict(InputConstants.Key key) {
         List<KeyMapping> matches = new ArrayList<>();
-		KeyMapping[] keysAll = Minecraft.getInstance().options.keyMappings;
-        for (KeyMapping bind: keysAll) {
-            if (bind.getKey().equals(key)
-                    &&bind.getKeyConflictContext().conflicts(KeyConflictContext.IN_GAME)
-                    &&bind.getKeyModifier()== KeyModifier.NONE) {
+        KeyMapping[] keysAll = Minecraft.getInstance().options.keyMappings;
+        for (KeyMapping bind : keysAll) {
+            if (bind.getKey().equals(key) && bind.getKeyConflictContext().conflicts(KeyConflictContext.IN_GAME) && bind.getKeyModifier() == KeyModifier.NONE) {
                 matches.add(bind);
             }
         }
-        if(matches.size() <2){
-            KeyMappingManager.conflictingKeys.remove(key);
+
+        if (matches.size() < 2) {
+            conflictingKeys.remove(key);
             return false;
-        }
+        } else {
+            if (!boundKeyMapping.containsKey(key)) {
+                boundKeyMapping.put(key, matches.get(0));
+            }
 
-            KeyMappingManager.conflictingKeys.put(key, matches);
-
-            // Check if the key is in the array
+            conflictingKeys.put(key, matches);
             boolean keyInArray = false;
             for (InputConstants.Key arrayKey : keysToCheck) {
                 if (arrayKey.equals(key)) {
                     keyInArray = true;
-                    KeyMappingManager.conflictingKeys.remove(key);
+                    conflictingKeys.remove(key);
                     break;
                 }
             }
-
             return !keyInArray;
+        }
     }
 
-    public static void clickKeys(KeyMapping key){
-
-        key.setDown(true);
-        ((AccessorKeyMapping)key).setClickCount(((AccessorKeyMapping)key).getClickCount() + 1);
-
-    }
     public static void openConflictMenu(InputConstants.Key key) {
         KeybindsScreen screen = new KeybindsScreen(key);
         Minecraft.getInstance().setScreen(screen);
     }
+
     public static List<KeyMapping> getConflicting(InputConstants.Key key) {
         return conflictingKeys.get(key);
     }
-
 }
