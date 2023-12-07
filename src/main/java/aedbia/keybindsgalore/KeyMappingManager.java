@@ -26,13 +26,14 @@ public class KeyMappingManager {
             InputConstants.getKey("key.keyboard.w"),
             InputConstants.getKey("key.keyboard.a"),
             InputConstants.getKey("key.keyboard.s"),
-            InputConstants.getKey("key.keyboard.d")};
-
-    public static KeyMapping OPEN_CONFLICT_MENU = new KeyMapping(KeybindsGalore.MODID+".open_conflict_menu",InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_ALT,"key.categories.KeyBindGalore");
-    public KeyMappingManager() {
-    }
+            InputConstants.getKey("key.keyboard.d")
+    };
+    public static KeyMapping OPEN_CONFLICT_MENU = new KeyMapping(KeybindsGalore.MODID+".function_key",InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_ALT,"key.categories.KeyBindGalore");
 
     public static boolean handleConflict(InputConstants.Key key) {
+        if(key.getType()== InputConstants.Type.MOUSE){
+            return false;
+        }
         List<KeyMapping> matches = new ArrayList<>();
         KeyMapping[] keysAll = Minecraft.getInstance().options.keyMappings;
         for (KeyMapping bind : keysAll) {
@@ -66,7 +67,6 @@ public class KeyMappingManager {
         KeybindsScreen screen = new KeybindsScreen(key);
         Minecraft.getInstance().setScreen(screen);
     }
-
     public static List<KeyMapping> getConflicting(InputConstants.Key key) {
         return conflictingKeys.get(key);
     }

@@ -1,6 +1,7 @@
 package aedbia.keybindsgalore.mixins;
 
 import aedbia.keybindsgalore.KeyMappingManager;
+import aedbia.keybindsgalore.KeybindsGaloreConfig;
 import aedbia.keybindsgalore.KeybindsScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
@@ -41,7 +42,7 @@ public class KeybindsGaloreMixins {
             boolean a = KeyMappingManager.handleConflict(key);
             if (a) {
                 Screen x = Minecraft.getInstance().screen;
-                boolean b = KeyMappingManager.OPEN_CONFLICT_MENU.isDown();
+                boolean b = !KeybindsGaloreConfig.workMode||KeyMappingManager.OPEN_CONFLICT_MENU.isDown();
                         //InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.getKey("key.keyboard.left.alt").getValue());
                 if (x == null && b && !KeybindsScreen.isOpen()) {
                     KeyMappingManager.openConflictMenu(key);
@@ -64,11 +65,13 @@ public class KeybindsGaloreMixins {
                 cancellable = true
         )
         private static void click(InputConstants.Key key, CallbackInfo ci) {
-            Screen x = Minecraft.getInstance().screen;
-            if (x == null && KeyMappingManager.handleConflict(key)) {
-                KeyMapping keyMapping = KeyMappingManager.boundKeyMapping.get(key);
-                ((KeybindsGaloreMixins.AccessorKeyMapping)keyMapping).setClickCount(((KeybindsGaloreMixins.AccessorKeyMapping)keyMapping).getClickCount() + 1);
-                ci.cancel();
+            if(KeybindsGaloreConfig.workMode) {
+                Screen x = Minecraft.getInstance().screen;
+                if (x == null && KeyMappingManager.handleConflict(key)) {
+                    KeyMapping keyMapping = KeyMappingManager.boundKeyMapping.get(key);
+                    ((KeybindsGaloreMixins.AccessorKeyMapping) keyMapping).setClickCount(((KeybindsGaloreMixins.AccessorKeyMapping) keyMapping).getClickCount() + 1);
+                    ci.cancel();
+                }
             }
         }
 
@@ -78,13 +81,14 @@ public class KeybindsGaloreMixins {
                 cancellable = true
         )
         private static void set(InputConstants.Key key, boolean down, CallbackInfo ci) {
-            Screen x = Minecraft.getInstance().screen;
-            if (x == null && KeyMappingManager.handleConflict(key)) {
-                KeyMapping keyMapping = KeyMappingManager.boundKeyMapping.get(key);
-                keyMapping.setDown(down);
-                ci.cancel();
+            if(KeybindsGaloreConfig.workMode) {
+                Screen x = Minecraft.getInstance().screen;
+                if (x == null && KeyMappingManager.handleConflict(key)) {
+                    KeyMapping keyMapping = KeyMappingManager.boundKeyMapping.get(key);
+                    keyMapping.setDown(down);
+                    ci.cancel();
+                }
             }
-
         }
     }
 }

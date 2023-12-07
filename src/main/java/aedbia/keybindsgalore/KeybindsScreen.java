@@ -2,6 +2,7 @@
 package aedbia.keybindsgalore;
 
 import aedbia.keybindsgalore.compatible.ShowKeyCompatible;
+import aedbia.keybindsgalore.mixins.KeybindsGaloreMixins;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -14,7 +15,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
+
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class KeybindsScreen extends Screen {
     int timeIn = 0;
@@ -23,7 +30,8 @@ public class KeybindsScreen extends Screen {
     @SuppressWarnings("FieldMayBeFinal")
     private InputConstants.Key conflictedKey;
     final Minecraft mc;
-
+    private static final ScheduledThreadPoolExecutor scheduled = new ScheduledThreadPoolExecutor(1);
+    private static ScheduledFuture<?> future;
     public KeybindsScreen(InputConstants.Key key) {
         super(Component.empty());
         this.conflictedKey = key;
@@ -107,20 +115,18 @@ public class KeybindsScreen extends Screen {
             float rad = ((float)seg + 0.5F) * degPer;
             float xp = (float)x + Mth.cos(rad) * radius;
             float yp = (float)y + Mth.sin(rad) * radius;
-            String boundKey = Component.translatable(KeyMappingManager.getConflicting(this.conflictedKey).get(seg).getName()).getString();
+            MutableComponent boundKey = Component.translatable(KeyMappingManager.getConflicting(this.conflictedKey).get(seg).getName()).withStyle(mouseInSector?Style.EMPTY.withUnderlined(true):Style.EMPTY);
             float xsp = xp - 4.0F;
             i = yp;
-            String name = mouseInSector ? "=" + boundKey + "=" : boundKey;
-            int width = name.length();
+            int width = boundKey.getString().length();
             if (xsp < (float)x) {
                 xsp -= (float)(width - 8);
             }
-
             if (yp < (float)y) {
                 i = yp - 9.0F;
             }
 
-            context.drawCenteredString(this.font, name, (int)xsp, (int)i, 16777215);
+            context.drawCenteredString(this.font, boundKey, (int)xsp, (int)i, 16777215);
         }
 
     }
@@ -148,11 +154,27 @@ public class KeybindsScreen extends Screen {
             KeyMapping keyMapping = KeyMappingManager.getConflicting(this.conflictedKey).get(this.slotSelected);
             KeyMappingManager.boundKeyMapping.put(this.conflictedKey, keyMapping);
             ShowKeyCompatible.sendList();
+            if(!KeybindsGaloreConfig.workMode){
+                ((KeybindsGaloreMixins.AccessorKeyMapping)keyMapping).setClickCount(((KeybindsGaloreMixins.AccessorKeyMapping)keyMapping).getClickCount()+1);
+                keyMapping.setDown(true);
+                if(KeyMappingManager.OPEN_CONFLICT_MENU.isDown()){
+                    future = scheduled.scheduleAtFixedRate(()->{
+                        if(!KeyMappingManager.OPEN_CONFLICT_MENU.isDown()){
+                            ((KeybindsGaloreMixins.AccessorKeyMapping)keyMapping).setClickCount(0);
+                            keyMapping.setDown(false);
+                            if(future!=null){
+                                future.cancel(true);
+                            }
+                        }else {
+                            ((KeybindsGaloreMixins.AccessorKeyMapping)keyMapping).setClickCount(((KeybindsGaloreMixins.AccessorKeyMapping)keyMapping).getClickCount()+1);
+                        }
+                    },0,1,TimeUnit.MILLISECONDS);
+                }else {
+                    scheduled.schedule(()->keyMapping.setDown(false),50,TimeUnit.MILLISECONDS);
+                }
+            }
         }
-
     }
-
-
     @Override
     public boolean isPauseScreen() {
         return false;

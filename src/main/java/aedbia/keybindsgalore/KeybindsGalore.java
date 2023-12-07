@@ -3,7 +3,9 @@ package aedbia.keybindsgalore;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
@@ -18,6 +20,7 @@ public class KeybindsGalore {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, KeybindsGaloreConfig.SPEC);
         MinecraftForge.EVENT_BUS.addListener(ShowKeyCompatible::onClientTick);*/
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, KeybindsGaloreConfig.SPEC);
     }
 
     @SubscribeEvent
